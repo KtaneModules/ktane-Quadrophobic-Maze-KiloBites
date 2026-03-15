@@ -19,6 +19,8 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	public Sprite[] Icons;
     public SpriteRenderer[] IconViewers;
 
+    public Material[] ButtonMats;
+
 	static int moduleIdCounter = 1, qmMazeIdCounter = 1;
 	int moduleId, qmMazeId;
 	private bool moduleSolved, isActivated;
@@ -70,6 +72,9 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	
 	void Start()
     {
+        // TODO: Unfuck this duplicate mess. The log gives reference to what was being duplicated, and on what index, specifically from the Sprite array.
+        Log(Icons.Select((x, i) => new { Index = i, SpriteName = x.name }).GroupBy(x => x.SpriteName).Where(x => x.Count() > 1).SelectMany(x => x.Select(y => $"{y.SpriteName} ({y.Index})")).Join());
+        
 	    generator = new QMazeTools();
 	    iconGridGenerator = new SolveOrderGenerator(Icons);
 
@@ -90,6 +95,9 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         if (qmMazeIdCounter == 1)
             Audio.PlaySoundAtTransform("Startup", transform);
+
+        foreach (var iconViewer in IconViewers)
+            iconViewer.GetComponentInParent<MeshRenderer>().material = ButtonMats[1];
         
         DisplayIcons();
     }
@@ -135,7 +143,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
                             break;
                         case QMButton.Ana:
                         case QMButton.Kata:
-                            currentPosition[0] = (buttonIx == QMButton.Ana ? currentPosition[0] - 1 + 4 : currentPosition[1] + 1) % 4;
+                            currentPosition[0] = (buttonIx == QMButton.Ana ? currentPosition[0] - 1 + 4 : currentPosition[0] + 1) % 4;
                             break;
                     }
                 }
@@ -262,7 +270,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
         var directions = buttonToWallLetter.Keys.ToArray();
         
-        var paths =  new List<List<QMButton>>();
+        var paths = new List<List<QMButton>>();
 
         foreach (var key in keys)
         {
