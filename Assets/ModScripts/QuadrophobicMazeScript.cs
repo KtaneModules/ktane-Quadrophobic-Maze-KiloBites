@@ -69,12 +69,19 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
 	private float DetermineUOT() => Enumerable.Range(0, 30 + (10 * uotIncrease)).Sum(_ => Range(0.8f, 1.2f));
 
+    private int DecimalPosition(int[] coords)
+    {
+        var dec = 0;
+
+        for (int i = 0; i < coords.Length; i++)
+            dec += coords[i] * (int)Math.Pow(4, 4 - i);
+
+        return dec;
+    }
+
 	
 	void Start()
     {
-        // TODO: Unfuck this duplicate mess. The log gives reference to what was being duplicated, and on what index, specifically from the Sprite array.
-        Log(Icons.Select((x, i) => new { Index = i, SpriteName = x.name }).GroupBy(x => x.SpriteName).Where(x => x.Count() > 1).SelectMany(x => x.Select(y => $"{y.SpriteName} ({y.Index})")).Join());
-        
 	    generator = new QMazeTools();
 	    iconGridGenerator = new SolveOrderGenerator(Icons);
 
@@ -85,6 +92,10 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	    currentPosition = initialPosition.ToArray();
         generator.GenerateKeys(Bomb.GetSerialNumber(), iconGridGenerator.TableIndexes, iconGrid, out keys);
         keyReferenceForReset = keys.ToList();
+        
+        Log($"[Quadrophobic Maze #{moduleId}] The initial position is at {DecimalPosition(currentPosition)} ({currentPosition.Join(",")})");
+        
+        
     }
 
     void OnDestroy() => qmMazeIdCounter = 1;

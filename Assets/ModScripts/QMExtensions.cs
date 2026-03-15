@@ -145,12 +145,20 @@ public static class QMExtensions
         {
             var modifiedIndex = index;
 
-            while (!tableIndexes.Contains(modifiedIndex) || goals.Contains(modifiedIndex))
+            while (true)
+            {
+                if (tableIndexes.Contains(modifiedIndex))
+                {
+                    if (goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex).DecimalPosition))
+                        continue;
+
+                    break;
+                }
+
                 modifiedIndex = (modifiedIndex + 1) % 360;
+            }
             
-            var getValidIndex = flattenGrid.IndexOf(x => x.TableIndex == modifiedIndex);
-            
-            goals.Add(flattenGrid[getValidIndex].DecimalPosition);
+            goals.Add(flattenGrid.First(x => x.TableIndex == modifiedIndex).DecimalPosition);
         }
 
         return goals;
