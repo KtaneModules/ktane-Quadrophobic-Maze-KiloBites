@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class Icon : IEquatable<Icon>
+public struct Icon : IEquatable<Icon>
 {
     public Sprite IconSprite { get; private set; }
     public int DecimalPosition { get; private set; }
@@ -15,7 +15,7 @@ public class Icon : IEquatable<Icon>
         TableIndex = tableIndex;
     }
 
-    public override bool Equals(object obj) => obj is Icon && Equals(obj as Icon);
+    public override bool Equals(object obj) => obj is Icon && Equals((Icon)obj);
 
     public override int GetHashCode() => 420 * (DecimalPosition % 4) + (TableIndex % 4);
 

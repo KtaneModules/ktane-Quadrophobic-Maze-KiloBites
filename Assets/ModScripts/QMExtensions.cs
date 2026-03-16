@@ -34,7 +34,7 @@ public static class QMExtensions
 
     private static T[] Flat4DArray<T>(this T[,,,] source) => source.Cast<T>().ToArray();
 
-    public static bool IsWallPresent(int[] position, Icon[,,,] iconGrid, string[,,,] maze, QMButton dir, out Icon displayedAdjacentIcon)
+    public static bool IsWallPresent(int[] position, Icon[,,,] iconGrid, string[,,,] maze, QMButton dir, out Icon? displayedAdjacentIcon)
     {
         displayedAdjacentIcon = null;
 

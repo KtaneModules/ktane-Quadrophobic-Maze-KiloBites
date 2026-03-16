@@ -97,7 +97,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
     {
         isActivated = true;
         
-        if (qmMazeIdCounter == 1)
+        if (qmMazeId== 1)
             Audio.PlaySoundAtTransform("Startup", transform);
 
         foreach (var iconViewer in IconViewers)
@@ -230,13 +230,13 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         for (int i = 0; i < 8; i++)
         {
-            Icon iconToDisplay;
+            Icon? iconToDisplay;
             IconViewers[i].enabled = !QMExtensions.IsWallPresent(currentPosition, iconGrid, maze, dirs[i], out iconToDisplay);
 
             if (iconToDisplay == null)
                 continue;
 
-            IconViewers[i].sprite = iconToDisplay.IconSprite;
+            IconViewers[i].sprite = iconToDisplay?.IconSprite;
         }
     }
 	
@@ -247,10 +247,10 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	{
 		public Icon CurrentPosition { get; private set; }
 		public int[] CurrentPositionIndex { get; private set; }
-		public Icon ParentPosition { get; private set; }
+		public Icon? ParentPosition { get; private set; }
 		public QMButton? Direction { get; private set; }
 
-		public QueueInfo(Icon currentPosition, int[] currentPositionIndex, Icon parentPosition = null, QMButton? direction = null)
+		public QueueInfo(Icon currentPosition, int[] currentPositionIndex, Icon? parentPosition = null, QMButton? direction = null)
 		{
 			CurrentPosition = currentPosition;
 			CurrentPositionIndex = currentPositionIndex;
@@ -321,7 +321,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 					}
 			}
 
-			throw new InvalidOperationException($"Goal {goals.FindIndex(x => goal == x) + 1} cannot be reached and is therefore unsolvable!");
+			throw new InvalidOperationException($"Goal {goals.FindIndex(goal.Equals) + 1} cannot be reached and is therefore unsolvable!");
 			
 			goalfound:
 			var r = goal;
@@ -336,7 +336,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 				
 				path.Add(nr.Direction.Value);
 				
-				r = nr.ParentPosition;
+				r = nr.ParentPosition.Value;
 			}
 			
 			paths.Add(path);
