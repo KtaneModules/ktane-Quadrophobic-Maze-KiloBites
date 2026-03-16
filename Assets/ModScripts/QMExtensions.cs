@@ -122,43 +122,30 @@ public static class QMExtensions
         return total;
     }
 
-    public static List<int> GenerateGoals(string sn, List<int> tableIndexes, Icon[,,,] grid)
+    public static List<Icon> GenerateGoals(string sn, Icon[,,,] iconGrid)
     {
-        var goals = new List<int>();
-
+        var goals = new List<Icon>();
+        
         var convertedSn = ConvertBase36ToBinary(sn);
-
+        
         var splitStr = new[] { convertedSn.Substring(0, 16), convertedSn.Substring(16) }.Select(x => x.Select(y => y - '0').ToArray()).ToArray();
 
-        var addedTernary = new int[16];
-
-        for (int i = 0; i < 16; i++)
-            addedTernary[i] = splitStr[0][i] + splitStr[1][i];
+        var addedTernary = Enumerable.Range(0, 16).Select(x => splitStr[0][x] + splitStr[1][x]).ToArray();
 
         var ternaryGroups = addedTernary.Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / 4).Select(x => x.Select(v => v.Value).Join("")).Select(int.Parse).ToArray();
-        
-        var convertedGroups = ternaryGroups.Select(ConvertTernaryToDecimal).ToArray();
 
-        var flattenGrid = grid.Flat4DArray();
+        var convertedGroups = ternaryGroups.Select(ConvertTernaryToDecimal).ToArray();
+        
+        var flattenGrid = iconGrid.Flat4DArray();
 
         foreach (var index in convertedGroups)
         {
             var modifiedIndex = index;
 
-            while (true)
-            {
-                if (tableIndexes.Contains(modifiedIndex))
-                {
-                    if (goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex).DecimalPosition))
-                        continue;
-
-                    break;
-                }
-
+            while (!flattenGrid.Any(x => x.TableIndex == modifiedIndex) || goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex)))
                 modifiedIndex = (modifiedIndex + 1) % 360;
-            }
             
-            goals.Add(flattenGrid.First(x => x.TableIndex == modifiedIndex).DecimalPosition);
+            goals.Add(flattenGrid.First(x => x.TableIndex == modifiedIndex));
         }
 
         return goals;

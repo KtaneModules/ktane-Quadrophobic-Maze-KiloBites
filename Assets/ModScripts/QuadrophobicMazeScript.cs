@@ -35,7 +35,8 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	private Icon[,,,] iconGrid;
 
 	private int[] initialPosition, currentPosition;
-    private List<int> keys, keyReferenceForReset;
+	private Icon currentPositionIcon;
+	private List<Icon> keys, resetKeysForReference;
 
     private static readonly Dictionary<QMButton, char> buttonToWallLetter = new Dictionary<QMButton, char>
     {
@@ -69,16 +70,6 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
 	private float DetermineUOT() => Enumerable.Range(0, 30 + (10 * uotIncrease)).Sum(_ => Range(0.8f, 1.2f));
 
-    private int DecimalPosition(int[] coords)
-    {
-        var dec = 0;
-
-        for (int i = 0; i < coords.Length; i++)
-            dec += coords[i] * (int)Math.Pow(4, 4 - i);
-
-        return dec;
-    }
-
 	
 	void Start()
     {
@@ -90,12 +81,14 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	    maze = generator.GeneratedMaze;
 	    initialPosition = generator.InitialPosition;
 	    currentPosition = initialPosition.ToArray();
-        generator.GenerateKeys(Bomb.GetSerialNumber(), iconGridGenerator.TableIndexes, iconGrid, out keys);
-        keyReferenceForReset = keys.ToList();
+
+	    keys = QMExtensions.GenerateGoals(Bomb.GetSerialNumber(), iconGrid);
+	    resetKeysForReference = keys.ToList();
+	    
+	    UpdatePosition();
         
-        Log($"[Quadrophobic Maze #{moduleId}] The initial position is at {DecimalPosition(currentPosition)} ({currentPosition.Join(",")})");
-        
-        
+        Log($"[Quadrophobic Maze #{moduleId}] The initial position is at {currentPosition.Join(",")} ({currentPositionIcon.DecimalPosition})");
+        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => x.DecimalPosition).Join(", ")}");
     }
 
     void OnDestroy() => qmMazeIdCounter = 1;
@@ -163,6 +156,8 @@ public class QuadrophobicMazeScript : MonoBehaviour
         }
 
 	}
+	
+	void UpdatePosition() => currentPositionIcon = iconGrid[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]];
 
     IEnumerator Holding()
     {
@@ -200,7 +195,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
         }
         else
         {
-            if (keys.First() == iconGrid[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]].DecimalPosition)
+            if (keys.First().Equals(iconGrid[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]]))
             {
                 keys.RemoveAt(0);
 
@@ -216,6 +211,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
             {
                 // Todo: Make a strike animation.
             }
+            
         }
 		
 	}
@@ -247,117 +243,108 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
 	// Twitch Plays
 
-    private class QueueInfo
-    {
-        public int[] CurrentPosition { get; private set; }
-        public int CurrentPositionDecimal { get; private set; }
-        public int[] ParentPosition { get; private set; }
-        public int? ParentPositionDecimal { get; private set; }
-        public QMButton? Direction { get; private set; }
+	private struct QueueInfo
+	{
+		public Icon CurrentPosition { get; private set; }
+		public int[] CurrentPositionIndex { get; private set; }
+		public Icon ParentPosition { get; private set; }
+		public QMButton? Direction { get; private set; }
 
-        public QueueInfo(int[] currentPosition, int[] parentPosition = null, QMButton? direction = null)
-        {
-            CurrentPosition = currentPosition;
-            CurrentPositionDecimal = GetDecimal(currentPosition);
-            ParentPosition = parentPosition;
-            ParentPositionDecimal = parentPosition != null ? (int?)GetDecimal(parentPosition) : null;
-            Direction = direction;
-        }
+		public QueueInfo(Icon currentPosition, int[] currentPositionIndex, Icon parentPosition = null, QMButton? direction = null)
+		{
+			CurrentPosition = currentPosition;
+			CurrentPositionIndex = currentPositionIndex;
+			ParentPosition = parentPosition;
+			Direction = direction;
+		}
+	}
 
-        private static int GetDecimal(int[] coords)
-        {
-            var dec = 0;
+	private List<List<QMButton>> ObtainPaths()
+	{
+		var paths = new List<List<QMButton>>();
 
-            for (int i = 0; i < coords.Length; i++)
-                dec += coords[i] * (int)Math.Pow(4, 4 - i);
+		var lastKnownPosition = currentPosition.ToArray();
+		var goals = keys.ToList();
 
-            return dec;
-        }
-    }
+		var directions = buttonToWallLetter.Keys.ToArray();
 
-    private List<List<QMButton>> GetPathsForAllKeysPresent()
-    {
-        var lastKnownPosition = currentPosition.ToArray();
+		foreach (var goal in goals)
+		{
+			var q = new Queue<QueueInfo>();
+			var visited = new Dictionary<Icon, QueueInfo>();
+			
+			q.Enqueue(new QueueInfo(iconGrid[lastKnownPosition[0], lastKnownPosition[1], lastKnownPosition[2], lastKnownPosition[3]], lastKnownPosition));
 
-        var directions = buttonToWallLetter.Keys.ToArray();
-        
-        var paths = new List<List<QMButton>>();
+			while (q.Count > 0)
+			{
+				var qi = q.Dequeue();
 
-        foreach (var key in keys)
-        {
-            var q = new Queue<QueueInfo>();
-            var visited = new Dictionary<int, QueueInfo>();
-            
-            q.Enqueue(new QueueInfo(lastKnownPosition));
+				if (visited.ContainsKey(qi.CurrentPosition))
+					continue;
+				
+				visited[qi.CurrentPosition] = qi;
 
-            while (q.Count > 0)
-            {
-                var qi = q.Dequeue();
+				if (qi.CurrentPosition.Equals(goal))
+				{
+					lastKnownPosition = qi.CurrentPositionIndex.ToArray();
+					goto goalfound;
+				}
+				
+				foreach (var direction in directions)
+					if (!maze[qi.CurrentPositionIndex[0], qi.CurrentPositionIndex[1], qi.CurrentPositionIndex[2], qi.CurrentPositionIndex[3]].Contains(buttonToWallLetter[direction]))
+					{
+						var modifiedIndex = qi.CurrentPositionIndex.ToArray();
+						
+						switch (direction)
+						{
+							case QMButton.Up:
+							case QMButton.Down:
+								modifiedIndex[2] = (direction == QMButton.Up ? modifiedIndex[2] - 1 + 4 : modifiedIndex[2] + 1) % 4;
+								break;
+							case QMButton.Left:
+							case QMButton.Right:
+								modifiedIndex[3] = (direction == QMButton.Left ? modifiedIndex[3] - 1 + 4 : modifiedIndex[3] + 1) % 4;
+								break;
+							case QMButton.Top:
+							case QMButton.Bottom:
+								modifiedIndex[1] = (direction == QMButton.Top ? modifiedIndex[1] - 1 + 4 : modifiedIndex[1] + 1) % 4;
+								break;
+							case QMButton.Ana:
+							case QMButton.Kata:
+								modifiedIndex[0] = (direction ==  QMButton.Ana ? modifiedIndex[0] - 1 + 4 : modifiedIndex[0] + 1) % 4;
+								break;
+						}
+						
+						var newIcon = iconGrid[modifiedIndex[0], modifiedIndex[1], modifiedIndex[2], modifiedIndex[3]];
+						
+						q.Enqueue(new QueueInfo(newIcon, modifiedIndex, qi.CurrentPosition, direction));
+					}
+			}
 
-                if (visited.ContainsKey(qi.CurrentPositionDecimal))
-                    continue;
-                
-                visited[qi.CurrentPositionDecimal] = qi;
+			throw new InvalidOperationException($"Goal {goals.FindIndex(x => goal == x) + 1} cannot be reached and is therefore unsolvable!");
+			
+			goalfound:
+			var r = goal;
+			var path = new List<QMButton>();
 
-                if (qi.CurrentPositionDecimal == key)
-                {
-                    lastKnownPosition = qi.CurrentPosition;
-                    goto goalfound;
-                }
-                
-                foreach (var direction in directions)
-                    if (!maze[qi.CurrentPosition[0], qi.CurrentPosition[1], qi.CurrentPosition[2], qi.CurrentPosition[3]].Contains(buttonToWallLetter[direction]))
-                    {
-                        var newPosition = qi.CurrentPosition.ToArray();
+			while (true)
+			{
+				var nr = visited[r];
 
-                        switch (direction)
-                        {
-                            case QMButton.Up:
-                            case QMButton.Down:
-                                newPosition[2] = (direction == QMButton.Up ? newPosition[2] - 1 + 4 : newPosition[2] + 1) % 4;
-                                break;
-                            case QMButton.Left:
-                            case QMButton.Right:
-                                newPosition[3] = (direction == QMButton.Left ? newPosition[3] - 1 + 4 : newPosition[3] + 1) % 4;
-                                break;
-                            case QMButton.Top:
-                            case QMButton.Bottom:
-                                newPosition[1] = (direction == QMButton.Top ? newPosition[1] - 1 + 4 : newPosition[1] + 1) % 4;
-                                break;
-                            case QMButton.Ana:
-                            case QMButton.Kata:
-                                newPosition[0] = (direction == QMButton.Ana ? newPosition[0] - 1 + 4 : newPosition[1] + 1) % 4;
-                                break;
-                        }
-                        
-                        q.Enqueue(new QueueInfo(newPosition, qi.CurrentPosition, direction));
-                    }
-            }
+				if (nr.ParentPosition == null)
+					break;
+				
+				path.Add(nr.Direction.Value);
+				
+				r = nr.ParentPosition;
+			}
+			
+			paths.Add(path);
+		}
 
-            throw new InvalidOperationException($"Cannot find a valid path for {keys.FindIndex(x => x == key) + 1}, making it unsolvable!");
-            
-            goalfound:
-            
-            var path = new List<QMButton>();
-            var r = key;
-
-            while (true)
-            {
-                var nr = visited[r];
-
-                if (nr.ParentPosition == null)
-                    break;
-                
-                path.Add(nr.Direction.Value);
-                r = nr.ParentPositionDecimal.Value;
-            }
-            
-            paths.Add(path);
-        }
-
-        return paths;
-    }
-
+		return paths;
+	}
+	
 
 #pragma warning disable 414
 	private readonly string TwitchHelpMessage = @"!{0} something";

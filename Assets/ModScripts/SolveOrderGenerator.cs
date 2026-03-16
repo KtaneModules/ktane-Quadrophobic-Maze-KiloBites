@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Icon
+public class Icon : IEquatable<Icon>
 {
     public Sprite IconSprite { get; private set; }
     public int DecimalPosition { get; private set; }
@@ -15,16 +14,20 @@ public class Icon
         DecimalPosition = decimalPosition;
         TableIndex = tableIndex;
     }
+
+    public override bool Equals(object obj) => obj is Icon && Equals(obj as Icon);
+
+    public override int GetHashCode() => 420 * (DecimalPosition % 4) + (TableIndex % 4);
+
+    public bool Equals(Icon other) => IconSprite == other.IconSprite && DecimalPosition == other.DecimalPosition && TableIndex == other.TableIndex;
 }
 
 public class SolveOrderGenerator
 {
     public Icon[,,,] GeneratedSolveOrderGrid { get; private set; }
-    public List<int> TableIndexes { get; private set; }
      
     public SolveOrderGenerator(Sprite[] icons)
     {
-        TableIndexes = Enumerable.Range(0, icons.Length).ToList().Shuffle().Take(256).OrderBy(x => x).ToList();
-        GeneratedSolveOrderGrid = TableIndexes.Select((x, i) => new Icon(icons[x], i, x)).To4DArray();
+        GeneratedSolveOrderGrid = Enumerable.Range(0, 360).ToList().Shuffle().Take(256).OrderBy(x => x).Select((x, i) => new Icon(icons[x], i, x)).To4DArray();
     }
  }

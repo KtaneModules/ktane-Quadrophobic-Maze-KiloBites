@@ -135,6 +135,4 @@ public class QMazeTools
         }
         while ("UDLR".Any(GeneratedMaze[InitialPosition[0], InitialPosition[1], InitialPosition[2], InitialPosition[3]].Contains));
     }
-
-    public void GenerateKeys(string sn, List<int> tableIxes, Icon[,,,] grid, out List<int> keys) => keys = QMExtensions.GenerateGoals(sn, tableIxes, grid).ToList();  
 }
