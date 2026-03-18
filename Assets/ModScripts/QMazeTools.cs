@@ -7,13 +7,14 @@ public class QMazeTools
 {
     private static readonly int mazeRow = 4, mazeCol = 4, mazeFloor = 4, mazeTimeline = 4;
 
-    public readonly string[,,,] GeneratedMaze = new string[4,4,4,4];
+    public readonly string[,,,] GeneratedMaze;
     public readonly int[] InitialPosition;
     private string[,,,] connectionsGenerated = new string[4,4,4,4];
     
     public QMazeTools()
     {
         InitialPosition = Enumerable.Range(0, 4).Select(_ => Range(0, 4)).ToArray();
+        GeneratedMaze = Enumerable.Repeat("UDLRTBAK", 256).To4DArray();
         GenerateMazeOriginShift();
     }
 
@@ -25,8 +26,6 @@ public class QMazeTools
                     for (int y = 0; y < mazeRow; y++)
                     {
                         //U = Up, D = Down, L = Left, R = Right, T = Top, B = Bottom, A = Ana, K = Kata
-
-                        GeneratedMaze[w, z, x, y] = "UDLRTBAK";
 
                         if (y < mazeRow - 1)
                             connectionsGenerated[w, z, x, y] = "R";
