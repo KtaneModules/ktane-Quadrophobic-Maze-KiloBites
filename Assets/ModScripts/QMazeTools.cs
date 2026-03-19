@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using static UnityEngine.Random;
 
@@ -9,7 +8,9 @@ public class QMazeTools
 
     public readonly string[,,,] GeneratedMaze;
     public readonly int[] InitialPosition;
-    private string[,,,] connectionsGenerated = new string[4,4,4,4];
+    private string[,,,] connectionsGenerated = new string[4, 4, 4, 4];
+    
+    public readonly List<string> LoggedMaze = new List<string>();
     
     public QMazeTools()
     {
@@ -133,5 +134,25 @@ public class QMazeTools
                             }
         }
         while ("UDLR".Any(GeneratedMaze[InitialPosition[0], InitialPosition[1], InitialPosition[2], InitialPosition[3]].Contains));
+
+        for (int w = 0; w < 4; w++)
+        {
+            LoggedMaze.Add($"W {w}:");
+
+            for (int z = 0; z < 4; z++)
+            {
+                LoggedMaze.Add($"Z {z}:");
+
+                for (int x = 0; x < 4; x++)
+                {
+                    var mazeShit = string.Empty;
+                    for (int y = 0; y < 4; y++)
+                        mazeShit += $"[{GeneratedMaze[w, z, x, y]}]";
+                    
+                    LoggedMaze.Add(mazeShit);
+                }
+            }
+            LoggedMaze.Add("----------------------------------------------------");
+        }
     }
 }

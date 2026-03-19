@@ -88,7 +88,12 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	    UpdatePosition();
         
         Log($"[Quadrophobic Maze #{moduleId}] The initial position is at {currentPosition.Join(",")} ({currentPositionIcon.DecimalPosition})");
+        Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
         Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => x.DecimalPosition).Join(", ")}");
+        Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
+        Log($"[Quadrophobic Maze #{moduleId}] < Generated Walls of the Maze>");
+        foreach (var log in generator.LoggedMaze)
+	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
     }
 
     void OnDestroy() => qmMazeIdCounter = 1;
@@ -150,8 +155,18 @@ public class QuadrophobicMazeScript : MonoBehaviour
                             currentPosition[0] = (buttonIx == QMButton.Ana ? currentPosition[0] - 1 + 4 : currentPosition[0] + 1) % 4;
                             break;
                     }
+                    
+                    UpdatePosition();
+                    
+                    Log($"[Quadrophobic Maze #{moduleId}] You went {buttonIx} and now went to ({currentPosition.Join(",")}) ({currentPositionIcon.DecimalPosition})");
+                    
+                    DisplayIcons();
                 }
-                DisplayIcons();
+                else
+                {
+	                Log($"[Quadrophobic Maze #{moduleId}] You went {buttonIx}, but there's a wall in that direction. Strike!");
+	                moduleAnimator = StartCoroutine(StrikeAnimation());
+                }
                 break;
         }
 
@@ -172,6 +187,35 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         canReset = true;
         holding = null;
+    }
+
+    IEnumerator StrikeAnimation()
+    {
+	    var duration = 1f;
+	    var elapsed = 0f;
+
+	    foreach (var iconViewer in IconViewers)
+		    iconViewer.enabled = false;
+
+	    var baseColor = ButtonMats[1].color;
+
+	    Audio.PlaySoundAtTransform("Strike", transform);
+	    Module.HandleStrike();
+	    
+	    while (elapsed < duration)
+	    {
+		    Array.ForEach(IconViewers, x => x.GetComponentInParent<MeshRenderer>().material.color = Color.Lerp(Color.red, baseColor, elapsed));
+		    yield return null;
+		    elapsed += Time.deltaTime;
+	    }
+	    
+	    Array.ForEach(IconViewers, x => x.GetComponentInParent<MeshRenderer>().material.color = baseColor);
+
+	    canShowIcons = true;
+	    
+	    DisplayIcons();
+
+	    moduleAnimator = null;
     }
 
 	void ButtonRelease(KMSelectable button)
@@ -195,7 +239,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
         }
         else
         {
-            if (keys.First().Equals(iconGrid[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]]))
+            if (keys.First().Equals(currentPositionIcon))
             {
                 keys.RemoveAt(0);
 
@@ -209,7 +253,8 @@ public class QuadrophobicMazeScript : MonoBehaviour
             }
             else
             {
-                // Todo: Make a strike animation.
+                Log($"[Quadrophobic Maze #{moduleId}] The current position's decimal ({currentPositionIcon}) doesn't match the key's goal, or isn't in the correct order. Strike!");
+                moduleAnimator = StartCoroutine(StrikeAnimation());
             }
             
         }

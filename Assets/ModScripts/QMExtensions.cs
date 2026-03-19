@@ -4,6 +4,14 @@ using System.Linq;
 
 public static class QMExtensions
 {
+    /// <summary>
+    /// Turns the elements of the given collection into a 4D array.
+    /// </summary>
+    /// <param name="source">Collection to reference.</param>
+    /// <typeparam name="T">Type of elements in the collection.</typeparam>
+    /// <returns>The transformed 4D array.</returns>
+    /// <exception cref="ArgumentNullException">The collection must not be null.</exception>
+    /// <exception cref="Exception">Has to be exactly 256 items in the collection. This is completely fixed.</exception>
     public static T[,,,] To4DArray<T>(this IEnumerable<T> source)
     {
         const int verifyCount = 256;
@@ -142,7 +150,7 @@ public static class QMExtensions
         {
             var modifiedIndex = index;
 
-            while (!flattenGrid.Any(x => x.TableIndex == modifiedIndex) || goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex)))
+            while (flattenGrid.All(x => x.TableIndex != modifiedIndex) || goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex)))
                 modifiedIndex = (modifiedIndex + 1) % 360;
             
             goals.Add(flattenGrid.First(x => x.TableIndex == modifiedIndex));
