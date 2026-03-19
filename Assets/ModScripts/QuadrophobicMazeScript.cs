@@ -87,11 +87,11 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	    
 	    UpdatePosition();
         
-        Log($"[Quadrophobic Maze #{moduleId}] The initial position is at {currentPosition.Join(",")} ({currentPositionIcon.DecimalPosition})");
+        Log($"[Quadrophobic Maze #{moduleId}] The initial position is at [{currentPosition.Join(",")}] ({currentPositionIcon.DecimalPosition})");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
-        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => x.DecimalPosition).Join(", ")}");
+        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => $"[{QMExtensions.GetCoords(x, iconGrid).Join(",")}] ({x.DecimalPosition})").Join(", ")}");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
-        Log($"[Quadrophobic Maze #{moduleId}] < Generated Walls of the Maze>");
+        Log($"[Quadrophobic Maze #{moduleId}] < Generated Walls of the Maze >");
         foreach (var log in generator.LoggedMaze)
 	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
     }

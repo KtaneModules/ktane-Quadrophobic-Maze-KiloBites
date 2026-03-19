@@ -42,6 +42,18 @@ public static class QMExtensions
 
     private static T[] Flat4DArray<T>(this T[,,,] source) => source.Cast<T>().ToArray();
 
+    public static int[] GetCoords(Icon iconToFind, Icon[,,,] iconGrid)
+    {
+        for (int w = 0; w < 4; w++)
+            for (int z = 0; z < 4; z++)
+                for (int x = 0; x < 4; x++)
+                    for (int y = 0; y < 4; y++)
+                        if (iconGrid[w, z, x, y].Equals(iconToFind))
+                            return new[] { w, z, x, y };
+
+        return null;
+    }
+
     public static bool IsWallPresent(int[] position, Icon[,,,] iconGrid, string[,,,] maze, QMButton dir, out Icon? displayedAdjacentIcon)
     {
         displayedAdjacentIcon = null;
