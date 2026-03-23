@@ -17,7 +17,7 @@ public struct Icon : IEquatable<Icon>
 
     public override bool Equals(object obj) => obj is Icon && Equals((Icon)obj);
 
-    public override int GetHashCode() => 420 * (DecimalPosition % 4) + (TableIndex % 4);
+    public override int GetHashCode() => 420 * DecimalPosition  + TableIndex % 4;
 
     public bool Equals(Icon other) => IconSprite == other.IconSprite && DecimalPosition == other.DecimalPosition && TableIndex == other.TableIndex;
 }

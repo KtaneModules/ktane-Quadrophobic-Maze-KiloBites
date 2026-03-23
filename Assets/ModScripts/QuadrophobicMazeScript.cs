@@ -89,20 +89,23 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         Log($"[Quadrophobic Maze #{moduleId}] The initial position is at [{currentPosition.Join(",")}] ({currentPositionIcon.DecimalPosition})");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
-        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => $"[{QMExtensions.GetCoords(x, iconGrid).Join(",")}] ({x.DecimalPosition})").Join(", ")}");
+        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => $"[{QMExtensions.GetCoords(x, iconGrid).Join(",")}] ({x.DecimalPosition}) (Table Index: {x.TableIndex})").Join(", ")}");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
         Log($"[Quadrophobic Maze #{moduleId}] < Generated Walls of the Maze >");
         foreach (var log in generator.LoggedMaze)
 	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
     }
 
-    void OnDestroy() => qmMazeIdCounter = 1;
+	void OnDestroy()
+	{
+		qmMazeIdCounter = 1;
+	}
 
     void Activate()
     {
         isActivated = true;
         
-        if (qmMazeId== 1)
+        if (qmMazeId == 1)
             Audio.PlaySoundAtTransform("Startup", transform);
 
         foreach (var iconViewer in IconViewers)
