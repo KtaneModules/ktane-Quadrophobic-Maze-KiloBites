@@ -54,6 +54,34 @@ public static class QMExtensions
         return null;
     }
 
+    public static List<string> LogIcons(this Icon[,,,] iconGrid)
+    {
+        var finalList = new List<string>();
+
+        for (int w = 0; w < 4; w++)
+        {
+            finalList.Add($"W {w}:");
+
+            for (int z = 0; z < 4; z++)
+            {
+                finalList.Add($"Z {z}:");
+
+                for (int x = 0; x < 4; x++)
+                {
+                    var broImInSpace = string.Empty;
+
+                    for (int y = 0; y < 4; y++)
+                        broImInSpace += $"[[{w},{z},{x},{y}] Table Index: {iconGrid[w, z, x, y].TableIndex}]";
+                    
+                    finalList.Add(broImInSpace);
+                }
+            }
+            finalList.Add("----------------------------------------------------");
+        }
+
+        return finalList;
+    }
+
     public static bool IsWallPresent(int[] position, Icon[,,,] iconGrid, string[,,,] maze, QMButton dir, out Icon? displayedAdjacentIcon)
     {
         displayedAdjacentIcon = null;

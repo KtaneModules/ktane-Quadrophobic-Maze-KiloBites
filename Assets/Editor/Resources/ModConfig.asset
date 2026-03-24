@@ -11,11 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: 
-  title: 
-  author: 
-  description: 
-  version: 
+  id: quadrophobicMaze
+  title: Quadrophobic Maze
+  author: Kilo Bites, Tachatat18
+  description: "HHHHEEEELLLLPPPP IIIIMMMM LLLLOOOOSSSSTTTT!!!!\n\nNavigate to specific
+    goals in a 4\xD74\xD74\xD74 maze."
+  version: 1
   outputFolder: build
   debugBuild: 1
   previewImage: {fileID: 0}

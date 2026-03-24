@@ -1,0 +1,10 @@
+{
+  "name": "quadrophobicMaze-Editor",
+  "references": [
+    "quadrophobicMaze"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}
