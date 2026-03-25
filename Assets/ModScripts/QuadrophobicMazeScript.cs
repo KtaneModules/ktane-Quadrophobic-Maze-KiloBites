@@ -102,12 +102,6 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         foreach (var log in iconGrid.LogIcons())
 	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
-
-        var paths = ObtainPaths();
-        
-        foreach (var path in paths)
-	        Log(path.Select(x => x).Reverse().Join(", "));
-
     }
 
 	void OnDestroy()
