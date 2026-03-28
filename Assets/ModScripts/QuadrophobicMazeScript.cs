@@ -93,7 +93,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
         
         Log($"[Quadrophobic Maze #{moduleId}] The initial position is at [{currentPosition.Join(",")}] ({currentPositionIcon.DecimalPosition})");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
-        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => $"[{QMExtensions.GetCoords(x, iconGrid).Join(",")}] ({x.DecimalPosition}) (Table Index: {x.TableIndex})").Join(", ")}");
+        Log($"[Quadrophobic Maze #{moduleId}] Goals are found in {keys.Select(x => $"[{QMExtensions.GetCoords(x, iconGrid).Join(",")}] ({x.DecimalPosition}) (Table Coordinate: {x})").Join(", ")}");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
         Log($"[Quadrophobic Maze #{moduleId}] < Generated Walls of the Maze >");
         foreach (var log in generator.LoggedMaze)
@@ -265,7 +265,6 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	void ButtonRelease(KMSelectable button)
 	{
 		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, button.transform);
-		button.AddInteractionPunch(0.4f);
 
 		if (moduleSolved || !isActivated || moduleAnimator != null || (QMButton)Array.IndexOf(Buttons, button) != QMButton.Dollar)
 			return;
@@ -568,7 +567,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 								break;
 							case QMButton.Ana:
 							case QMButton.Kata:
-								modifiedIndex[0] = (direction ==  QMButton.Ana ? modifiedIndex[0] - 1 + 4 : modifiedIndex[0] + 1) % 4;
+								modifiedIndex[0] = (direction == QMButton.Ana ? modifiedIndex[0] - 1 + 4 : modifiedIndex[0] + 1) % 4;
 								break;
 						}
 						

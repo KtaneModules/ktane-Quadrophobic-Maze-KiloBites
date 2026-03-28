@@ -40,8 +40,6 @@ public static class QMExtensions
         return result;
     }
 
-    private static T[] Flat4DArray<T>(this T[,,,] source) => source.Cast<T>().ToArray();
-
     public static int[] GetCoords(Icon iconToFind, Icon[,,,] iconGrid)
     {
         for (int w = 0; w < 4; w++)
@@ -183,8 +181,8 @@ public static class QMExtensions
         var ternaryGroups = addedTernary.Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / 4).Select(x => x.Select(v => v.Value).Join("")).Select(int.Parse).ToArray();
 
         var convertedGroups = ternaryGroups.Select(ConvertTernaryToDecimal).ToArray();
-        
-        var flattenGrid = iconGrid.Flat4DArray();
+
+        var flattenGrid = iconGrid.Cast<Icon>().ToArray();
 
         foreach (var index in convertedGroups)
         {

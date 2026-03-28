@@ -20,6 +20,8 @@ public struct Icon : IEquatable<Icon>
     public override int GetHashCode() => 420 * DecimalPosition + TableIndex;
 
     public bool Equals(Icon other) => IconSprite == other.IconSprite && DecimalPosition == other.DecimalPosition && TableIndex == other.TableIndex;
+    
+    public override string ToString() => $"{"ABCDEFGHIJKL"[TableIndex % 12]}{(TableIndex / 30) + 1}";
 }
 
 public class SolveOrderGenerator
