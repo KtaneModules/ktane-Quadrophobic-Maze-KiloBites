@@ -656,11 +656,11 @@ public class QuadrophobicMazeScript : MonoBehaviour
 					{ 'K', QMButton.Kata }
 				};
 
-				if (!split[1].Any(letterToDir.ContainsKey))
+				if (!split[1].All(letterToDir.ContainsKey))
 				{
 					var invalid = split[1].Where(x => !letterToDir.ContainsKey(x)).ToArray();
 
-					yield return $"sendtochaterror {invalid.Join(", ")} {(invalid.Length > 1 ? "aren't" : "isn't")} valid character{(invalid.Length > 1 ? "s" : string.Empty)}!";
+					yield return $"sendtochaterror {invalid.Select((x, i) => i == invalid.Length - 1 && invalid.Length > 1 ? $"and {x}" : x.ToString()).Join(", ")} {(invalid.Length > 1 ? "aren't" : "isn't a")} valid character{(invalid.Length > 1 ? "s" : string.Empty)}!";
 					yield break;
 				}
 				
@@ -691,9 +691,10 @@ public class QuadrophobicMazeScript : MonoBehaviour
 				yield return new WaitForSeconds(0.1f);
 				yield return "solve";
 				yield break;
+			default:
+				yield return "sendtochaterror The command you inputted is not valid!";
+				yield break;
 		}
-		
-		yield return null;
     }
 
 	IEnumerator TwitchHandleForcedSolve()

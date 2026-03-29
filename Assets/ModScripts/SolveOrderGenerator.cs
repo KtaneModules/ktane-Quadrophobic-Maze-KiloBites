@@ -21,7 +21,7 @@ public struct Icon : IEquatable<Icon>
 
     public bool Equals(Icon other) => IconSprite == other.IconSprite && DecimalPosition == other.DecimalPosition && TableIndex == other.TableIndex;
     
-    public override string ToString() => $"{"ABCDEFGHIJKL"[TableIndex % 12]}{(TableIndex / 30) + 1}";
+    public override string ToString() => $"{"ABCDEFGHIJKL"[TableIndex % 12]}{(TableIndex / 12) + 1}";
 }
 
 public class SolveOrderGenerator

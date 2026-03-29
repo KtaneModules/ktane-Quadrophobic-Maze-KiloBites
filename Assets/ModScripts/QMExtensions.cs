@@ -32,10 +32,7 @@ public static class QMExtensions
             for (int j = 0; j < 4; j++)
                 for (int k = 0; k < 4; k++)
                     for (int l = 0; l < 4; l++)
-                    {
-                        result[i, j, k, l] = convert[index];
-                        index++;
-                    }
+                        result[i, j, k, l] = convert[index++];
 
         return result;
     }
@@ -69,7 +66,7 @@ public static class QMExtensions
                     var broImInSpace = string.Empty;
 
                     for (int y = 0; y < 4; y++)
-                        broImInSpace += $"[[{w},{z},{x},{y}] Table Index: {iconGrid[w, z, x, y].TableIndex}]";
+                        broImInSpace += $"[[{w},{z},{x},{y}] Table Index: {iconGrid[w, z, x, y].TableIndex} ({iconGrid[w, z, x, y]})]";
                     
                     finalList.Add(broImInSpace);
                 }
