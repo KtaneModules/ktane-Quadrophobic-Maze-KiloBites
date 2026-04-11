@@ -49,7 +49,7 @@ public static class QMExtensions
         return null;
     }
 
-    public static List<string> LogIcons(this Icon[,,,] iconGrid)
+    public static IEnumerable<string> LogIcons(Icon[,,,] iconGrid)
     {
         var finalList = new List<string>();
 

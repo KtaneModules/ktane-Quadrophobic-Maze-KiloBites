@@ -100,7 +100,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
         Log($"[Quadrophobic Maze #{moduleId}] < Icons Generated with Table Indexing (0-Indexed) >");
         
-        foreach (var log in iconGrid.LogIcons())
+        foreach (var log in QMExtensions.LogIcons(iconGrid))
 	        Log($"[Quadrophobic Maze #{moduleId}] {log}");
     }
 
