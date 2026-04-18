@@ -18,5 +18,5 @@ MonoBehaviour:
     goals in a 4\xD74\xD74\xD74 maze."
   version: 1
   outputFolder: build
-  debugBuild: 1
-  previewImage: {fileID: 0}
+  debugBuild: 0
+  previewImage: {fileID: 2800000, guid: bc0f25f306ce34ef0803e6e68c5853ab, type: 3}
