@@ -6,7 +6,7 @@ public class QMazeTools
 {
     private static readonly int mazeRow = 4, mazeCol = 4, mazeFloor = 4, mazeTimeline = 4;
 
-    public readonly string[,,,] GeneratedMaze;
+    public string[,,,] GeneratedMaze;
     public readonly int[] InitialPosition;
     private string[,,,] connectionsGenerated = new string[4, 4, 4, 4];
     
@@ -46,7 +46,7 @@ public class QMazeTools
             for (int i = 0; i < 10; i++)
             {
                 var movement = Range(0, 8);
-                GeneratedMaze[currentTimeline, currentFloor, currentCol, currentRow] = "URDLTBAK";
+                GeneratedMaze = Enumerable.Repeat("UDLRTBAK", 256).To4DArray();
 
                 switch (movement)
                 {
