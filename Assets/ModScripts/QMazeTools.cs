@@ -15,7 +15,6 @@ public class QMazeTools
     public QMazeTools()
     {
         InitialPosition = Enumerable.Range(0, 4).Select(_ => Range(0, 4)).ToArray();
-        GeneratedMaze = Enumerable.Repeat("UDLRTBAK", 256).To4DArray();
         GenerateMazeOriginShift();
     }
 
@@ -43,11 +42,12 @@ public class QMazeTools
 
         do
         {
+            GeneratedMaze = Enumerable.Repeat("UDLRTBAK", 256).To4DArray();
+            
             for (int i = 0; i < 10; i++)
             {
                 var movement = Range(0, 8);
-                GeneratedMaze = Enumerable.Repeat("UDLRTBAK", 256).To4DArray();
-
+                
                 switch (movement)
                 {
                     case 0:

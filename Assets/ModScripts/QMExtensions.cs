@@ -165,7 +165,7 @@ public static class QMExtensions
         return total;
     }
 
-    public static List<Icon> GenerateGoals(string sn, Icon[,,,] iconGrid)
+    public static List<Icon> GenerateGoals(string sn, Icon[,,,] iconGrid, Icon startingIcon)
     {
         var goals = new List<Icon>();
         
@@ -181,14 +181,18 @@ public static class QMExtensions
 
         var flattenGrid = iconGrid.Cast<Icon>().ToArray();
 
+        var modifiedIndex = flattenGrid.IndexOf(startingIcon.Equals);
+
         foreach (var index in convertedGroups)
         {
-            var modifiedIndex = index;
+            modifiedIndex = (modifiedIndex + index) % 360;
 
             while (flattenGrid.All(x => x.TableIndex != modifiedIndex) || goals.Contains(flattenGrid.First(x => x.TableIndex == modifiedIndex)))
                 modifiedIndex = (modifiedIndex + 1) % 360;
             
             goals.Add(flattenGrid.First(x => x.TableIndex == modifiedIndex));
+            
+            
         }
 
         return goals;

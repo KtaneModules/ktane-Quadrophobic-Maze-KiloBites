@@ -85,11 +85,12 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	    maze = generator.GeneratedMaze;
 	    initialPosition = generator.InitialPosition;
 	    currentPosition = initialPosition.ToArray();
-
-	    keys = QMExtensions.GenerateGoals(Bomb.GetSerialNumber(), iconGrid);
-	    resetKeysForReference = keys.ToList();
 	    
 	    UpdatePosition();
+
+	    keys = QMExtensions.GenerateGoals(Bomb.GetSerialNumber(), iconGrid, currentPositionIcon);
+	    resetKeysForReference = keys.ToList();
+	    
         
         Log($"[Quadrophobic Maze #{moduleId}] The initial position is at [{currentPosition.Join(",")}] ({currentPositionIcon.DecimalPosition})");
         Log($"[Quadrophobic Maze #{moduleId}] ----------------------------------------------------");
