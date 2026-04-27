@@ -56,10 +56,39 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
 	private Coroutine holding, moduleAnimator;
 
+	private class QMSettings
+	{
+		public bool NoStrikeWhenIconsShown = false;
+	}
+	
+	private QMSettings settings = new QMSettings();
+
+	private static Dictionary<string, object>[] TweakEditorSettings =
+	{
+		new Dictionary<string, object>
+		{
+			["Filename"] = "QMSettings.json",
+			["Name"] = "Quadrophobic Maze Settings",
+			["Listings"] = new List<Dictionary<string, object>>
+			{
+				new Dictionary<string, object>
+				{
+					["Key"] = "NoStrikeWhenIconsShown",
+					["Text"] = "No Strike When Icons Shown",
+					["Description"] = "Doesn't cause a strike when navigating (when the icons are only shown)."
+				}
+			}
+		}
+	};
+
 	void Awake()
     {
 		moduleId = moduleIdCounter++;
         qmMazeId = qmMazeIdCounter++;
+
+        var config = new ModConfig<QMSettings>("QMSettings");
+        settings = config.Read();
+        config.Write(settings);
         
         Module.OnActivate += Activate;
 
@@ -76,7 +105,9 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
 	
 	void Start()
-    {
+	{
+		
+	    
 	    generator = new QMazeTools();
 	    iconGridGenerator = new SolveOrderGenerator(Icons);
 
@@ -149,7 +180,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 
                 break;
             default:
-                if (!maze[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]].Contains(buttonToWallLetter[buttonIx]))
+                if (!maze[currentPosition[0], currentPosition[1], currentPosition[2], currentPosition[3]].Contains(buttonToWallLetter[buttonIx]) || (canShowIcons && (settings.NoStrikeWhenIconsShown || TwitchPlaysActive)))
                 {
                     switch (buttonIx)
                     {
@@ -604,7 +635,8 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	
 
 #pragma warning disable 414
-	private readonly string TwitchHelpMessage = @"!{0} reset [resets the module] || !{0} submit [submits the current position] || !{0} move udlrtbak [moves the current position according to the directions given]";
+	private readonly string TwitchHelpMessage = @"!{0} reset [resets the module] || !{0} submit [submits the current position] || !{0} move udlrtbak [moves the current position according to the directions given]. In Twitch Plays, you will not strike unless the icons are invisible.";
+	private bool TwitchPlaysActive;
 #pragma warning restore 414
 
 	IEnumerator ProcessTwitchCommand(string command)

@@ -162,7 +162,7 @@ public static class QMExtensions
         for (int i = 0; i < numberLength; i++)
             total += (int)Math.Pow(3, numberLength - (i + 1)) * int.Parse(input.ToString()[i].ToString());
 
-        return total;
+        return total + 1;
     }
 
     public static List<Icon> GenerateGoals(string sn, Icon[,,,] iconGrid, Icon startingIcon)
