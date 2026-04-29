@@ -63,7 +63,7 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	
 	private QMSettings settings = new QMSettings();
 
-	private static Dictionary<string, object>[] TweakEditorSettings =
+	private static Dictionary<string, object>[] TweaksEditorSettings =
 	{
 		new Dictionary<string, object>
 		{
@@ -106,8 +106,6 @@ public class QuadrophobicMazeScript : MonoBehaviour
 	
 	void Start()
 	{
-		
-	    
 	    generator = new QMazeTools();
 	    iconGridGenerator = new SolveOrderGenerator(Icons);
 
